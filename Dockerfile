@@ -1,7 +1,7 @@
 FROM amd64/debian:buster-slim
 
 # Preps
-RUN apt-get -y update && apt-get -y upgrade && apt-get -y install nano sudo dnsutils
+RUN apt-get -y update && apt-get -y upgrade && apt-get -y install nano sudo dnsutils wget
 
 # install cloudflared
 RUN cd /tmp \
