@@ -21,4 +21,7 @@ RUN cd /tmp \
     && cp -n ./config.yml /etc/cloudflared/ \
     && rm -f ./config.yml
 
+EXPOSE 53/tcp
+EXPOSE 53/udp
+
 CMD cloudflared --config /etc/cloudflared/config.yml
