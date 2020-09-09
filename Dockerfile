@@ -1,27 +1,15 @@
-FROM amd64/debian:buster-slim
+FROM testdasi/debian-buster-slim-base:latest-amd64
 
-# Preps
-RUN apt-get -y update && apt-get -y upgrade && apt-get -y install nano sudo dnsutils wget
+ADD cloudflared /tmp
+COPY ./install.sh /
+EXPOSE 53/tcp 53/udp
 
 # install cloudflared
 RUN cd /tmp \
     && wget https://bin.equinox.io/c/VdrWdbjqyF/cloudflared-stable-linux-amd64.deb \
     && apt install ./cloudflared-stable-linux-amd64.deb \
     && rm -f ./cloudflared-stable-linux-amd64.deb \
-    && useradd -s /usr/sbin/nologin -r -M cloudflared \
-    && chown cloudflared:cloudflared /usr/local/bin/cloudflared
-# clean cloudflared config
-RUN mkdir -p /etc/cloudflared \
-    && rm -f /etc/cloudflared/config.yml
-
-# add cloudflared config
-ADD cloudflared /tmp
-RUN cd /tmp \
-    && mkdir -p /etc/cloudflared \
-    && cp -n ./config.yml /etc/cloudflared/ \
-    && rm -f ./config.yml
-
-EXPOSE 53/tcp
-EXPOSE 53/udp
+    && /bin/bash /install.sh \
+    && rm -f /install.sh
 
 CMD cloudflared --config /etc/cloudflared/config.yml
