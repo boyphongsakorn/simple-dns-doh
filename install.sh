@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# Install some additional packages
-apt-get -y update \
-    && apt-get -y install wget
-
 # install cloudflared
 # partially done in Dockerfile due to platform difference
 useradd -s /usr/sbin/nologin -r -M cloudflared \
