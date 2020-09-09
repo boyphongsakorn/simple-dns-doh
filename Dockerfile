@@ -5,7 +5,9 @@ COPY ./install.sh /
 EXPOSE 53/tcp 53/udp
 
 # install cloudflared
-RUN cd /tmp \
+RUN apt-get -y update \
+    && apt-get -y install wget
+    && cd /tmp \
     && wget https://bin.equinox.io/c/VdrWdbjqyF/cloudflared-stable-linux-amd64.deb \
     && apt install ./cloudflared-stable-linux-amd64.deb \
     && rm -f ./cloudflared-stable-linux-amd64.deb \
