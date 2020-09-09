@@ -5,7 +5,9 @@ COPY ./install.sh /
 EXPOSE 53/tcp 53/udp
 
 # install cloudflared and run install script
-RUN cd /tmp \
+RUN apt-get -y update \
+    && apt-get -y install wget
+    && cd /tmp \
     && wget https://bin.equinox.io/c/VdrWdbjqyF/cloudflared-stable-linux-arm.tgz \
     && tar -xvzf ./cloudflared-stable-linux-arm.tgz \
     && cp ./cloudflared /usr/local/bin \
