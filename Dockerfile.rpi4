@@ -1,0 +1,16 @@
+FROM testdasi/debian-buster-slim-base:latest-rpi4
+
+ADD cloudflared /tmp
+COPY ./install.sh /
+EXPOSE 53/tcp 53/udp
+
+# install cloudflared and run install script
+RUN cd /tmp \
+    && wget https://bin.equinox.io/c/VdrWdbjqyF/cloudflared-stable-linux-arm.tgz \
+    && tar -xvzf ./cloudflared-stable-linux-arm.tgz \
+    && cp ./cloudflared /usr/local/bin \
+    && rm -f ./cloudflared-stable-linux-arm.tgz \
+    && /bin/bash /install.sh \
+    && rm -f /install.sh
+
+CMD cloudflared --config /etc/cloudflared/config.yml
