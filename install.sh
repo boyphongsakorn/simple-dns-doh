@@ -2,7 +2,7 @@
 
 # install more packages
 apt-get -y update \
-    && apt-get -y install dnsutils wget sipcalc curl unzip
+    && apt-get -y install dnsutils wget
 
 # install cloudflared
 if [[ ${TARGETPLATFORM} =~ "arm" ]]
