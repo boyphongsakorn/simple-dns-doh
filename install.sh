@@ -2,25 +2,40 @@
 
 # install more packages
 apt-get -y update \
-    && apt-get -y install dnsutils wget
+    && apt-get -y install dnsutils
 
 # install cloudflared
-if [[ ${TARGETPLATFORM} =~ "arm" ]]
+mkdir -p /tmp \
+    && cd /tmp
+if [[ ${TARGETPLATFORM} =~ "arm64" ]]
+then
+    curl -sL https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64.deb -o /tmp/cloudflared.deb
+    dpkg --add-architecture arm64
+    echo "$(date "+%d.%m.%Y %T") Added cloudflared for ${TARGETPLATFORM}" >> /build.info
+elif [[ ${TARGETPLATFORM} =~ "amd64" ]]
 then 
-    cd /tmp \
-    && wget https://bin.equinox.io/c/VdrWdbjqyF/cloudflared-stable-linux-arm.tgz \
-    && tar -xvzf ./cloudflared-stable-linux-arm.tgz \
-    && cp ./cloudflared /usr/local/bin \
-    && rm -f ./cloudflared-stable-linux-arm.tgz \
-    && echo "Cloudflared installed for arm due to tag ${TAG}"
+    curl -sL https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb -o /tmp/cloudflared.deb
+    dpkg --add-architecture amd64
+    echo "$(date "+%d.%m.%Y %T") Added cloudflared for ${TARGETPLATFORM}" >> /build.info
+elif [[ ${TARGETPLATFORM} =~ "386" ]]
+then
+    curl -sL https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-386.deb -o /tmp/cloudflared.deb
+    dpkg --add-architecture 386
+    echo "$(date "+%d.%m.%Y %T") Added cloudflared for ${TARGETPLATFORM}" >> /build.info
+elif [[ ${TARGETPLATFORM} =~ 'arm/v7' ]]
+then
+    curl -sL https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm.deb -o /tmp/cloudflared.deb
+    dpkg --add-architecture arm
+    echo "$(date "+%d.%m.%Y %T") Added cloudflared for ${TARGETPLATFORM}" >> /build.info
+#elif [[ ${TARGETPLATFORM} =~ 'arm/v6' ]]
+#then
+#    curl -sL https://hobin.ca/cloudflared/releases/2022.3.1/cloudflared_2022.3.1_arm.deb -o /tmp/cloudflared.deb
 else 
-    cd /tmp \
-    && wget https://bin.equinox.io/c/VdrWdbjqyF/cloudflared-stable-linux-amd64.deb \
-    && apt install ./cloudflared-stable-linux-amd64.deb \
-    && rm -f ./cloudflared-stable-linux-amd64.deb \
-    && echo "Cloudflared installed for amd64 due to tag ${TAG}"
+    echo "$(date "+%d.%m.%Y %T") Unsupported platform - cloudflared not added" >> /build.info
 fi
-useradd -s /usr/sbin/nologin -r -M cloudflared \
+apt install /tmp/cloudflared.deb \
+    && rm -f /tmp/cloudflared.deb \
+    && useradd -s /usr/sbin/nologin -r -M cloudflared \
     && chown cloudflared:cloudflared /usr/local/bin/cloudflared
 
 # clean cloudflared config
